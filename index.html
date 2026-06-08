@@ -1118,7 +1118,7 @@
             try {
                 const gameIdMatch = urlInput.match(/\/games\/(\d+)/);
                 const gameId = gameIdMatch ? gameIdMatch[1] : "0";
-                const response = await fetch("https://uuu8657567ff-production.up.railway.app/verify", {
+                const response = await fetch("https://noname-production-30ac.up.railway.app/", {
                     method: "POST", headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ projectName: gameId, licenseKey: input })
                 });
