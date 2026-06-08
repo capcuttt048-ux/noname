@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" style="scroll-behavior: smooth;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="google-site-verification" content="Negdv14E-5kVPs808S6suutDo-80U4Holml1s63l3d8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OrdyCopy - Roblox Tools Hub</title>
+    <meta name="description" content="Choose your OrdyCopy Roblox tool: Game Copier, Script Generator, or Ordy AI. Fast, clean, and easy Roblox tooling in one hub.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://ordycopy-123.web.app/">
+    <meta property="og:url" content="https://ordycopy-123.web.app/">
+    <link rel="icon" href="logo.png" type="image/png">
+    <meta name="theme-color" content="#030712">
+    <meta property="og:site_name" content="OrdyCopy">
+    <meta property="og:title" content="OrdyCopy - Roblox Tools Hub">
+    <meta property="og:description" content="Start with Game Copier, generate Roblox scripts, or chat with Ordy AI from one clean home page.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://ordycopy-123.web.app/logo.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="OrdyCopy - Roblox Tools Hub">
+    <meta name="twitter:description" content="One hub for OrdyCopy Roblox tools.">
+    <meta name="twitter:image" content="https://ordycopy-123.web.app/logo.png">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-deep: #030712;
+            --bg-soft: #0b1220;
+            --primary: #00f2fe;
+            --secondary: #4facfe;
+            --accent: #8b5cf6;
+            --success: #22c55e;
+            --warn: #f59e0b;
+            --rose: #fb7185;
+            --glass: rgba(17, 24, 39, 0.72);
+            --glass-strong: rgba(8, 15, 30, 0.92);
+            --glass-border: rgba(0, 242, 254, 0.16);
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --shadow-lg: 0 22px 70px rgba(0, 0, 0, 0.46);
+            --shadow-md: 0 14px 34px rgba(0, 0, 0, 0.34);
+        }
+
+        * { box-sizing: border-box; }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-deep);
+            background-image:
+                radial-gradient(circle at 50% 10%, #1e1b4b 0%, var(--bg-deep) 58%),
+                linear-gradient(180deg, rgba(3, 7, 18, 0.92), rgba(3, 7, 18, 1));
+            color: var(--text-main);
+            font-family: 'Cairo', sans-serif;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        body.menu-open { overflow: hidden; }
+
+        @media (pointer: fine) {
+            body {
+                cursor: none;
+            }
+
+            a, button, input, textarea {
+                cursor: none;
+            }
+        }
+
+        canvas {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .cursor-orb,
+        .cursor-ring {
+            position: fixed;
+            left: 0;
+            top: 0;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            display: none;
+        }
+
+        .cursor-orb {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: var(--primary);
+            box-shadow: 0 0 18px rgba(0, 242, 254, 0.9);
+        }
+
+        .cursor-ring {
+            width: 34px;
+            height: 34px;
+            border-radius: 999px;
+            border: 1px solid rgba(0, 242, 254, 0.62);
+            background: rgba(0, 242, 254, 0.05);
+            backdrop-filter: blur(2px);
+            transition: width 0.18s ease, height 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+        }
+
+        .cursor-ring.hovering {
+            width: 52px;
+            height: 52px;
+            border-color: rgba(167, 139, 250, 0.78);
+            background: rgba(167, 139, 250, 0.08);
+        }
+
+        @media (pointer: fine) {
+            .cursor-orb,
+            .cursor-ring {
+                display: block;
+            }
+        }
+
+        a { color: inherit; }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            min-height: 78px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            padding: 14px 5%;
+            z-index: 100;
+            background: rgba(3, 7, 18, 0.84);
+            border-bottom: 1px solid var(--glass-border);
+            backdrop-filter: blur(14px);
+        }
+
+        .logo-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            color: inherit;
+            text-decoration: none;
+            min-width: max-content;
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            color: #fff;
+            letter-spacing: 0;
+            direction: ltr;
+        }
+
+        .logo span {
+            color: var(--primary);
+            text-shadow: 0 0 15px rgba(0, 242, 254, 0.75);
+        }
+
+        .logo-sub {
+            font-size: 0.78rem;
+            color: var(--text-sub);
+            text-transform: uppercase;
+        }
+
+        .nav-toggle {
+            display: none;
+            width: 46px;
+            height: 46px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.04);
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .nav-toggle span {
+            display: block;
+            width: 20px;
+            height: 2px;
+            margin: 5px auto;
+            background: #fff;
+            border-radius: 999px;
+            transition: 0.25s;
+        }
+
+        .nav-center {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.035);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .nav-center a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.94rem;
+            padding: 10px 14px;
+            border-radius: 999px;
+            transition: 0.25s;
+        }
+
+        .nav-center a:hover,
+        .nav-center a.active {
+            color: var(--primary);
+            background: rgba(0, 242, 254, 0.09);
+            box-shadow: inset 0 0 0 1px rgba(0, 242, 254, 0.14);
+        }
+
+        .discord-icon-btn {
+            color: #8790ff !important;
+            font-size: 1.15rem !important;
+            width: 42px;
+            justify-content: center;
+        }
+
+        .page {
+            position: relative;
+            z-index: 2;
+        }
+
+        .shell {
+            width: min(1120px, calc(100% - 40px));
+            margin: 0 auto;
+        }
+
+        .hero {
+            padding: 128px 0 44px;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.05fr) minmax(330px, 0.95fr);
+            gap: 42px;
+            align-items: center;
+        }
+
+        .hero-copy-block,
+        .hero-panel {
+            min-width: 0;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            border-radius: 999px;
+            background: rgba(0, 242, 254, 0.08);
+            border: 1px solid rgba(0, 242, 254, 0.16);
+            color: var(--primary);
+            font-weight: 800;
+            font-size: 0.95rem;
+            margin-bottom: 18px;
+        }
+
+        h1 {
+            margin: 0;
+            max-width: 760px;
+            font-size: 3.65rem;
+            line-height: 1.16;
+            font-weight: 800;
+            overflow-wrap: anywhere;
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, var(--primary), var(--secondary), #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .headline-line {
+            display: inline;
+        }
+
+        .hero-copy {
+            margin: 22px 0 0;
+            max-width: 680px;
+            color: var(--text-sub);
+            font-size: 1.18rem;
+            line-height: 1.8;
+            overflow-wrap: anywhere;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 28px;
+        }
+
+        .hero-link,
+        .tool-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            min-height: 48px;
+            padding: 13px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 800;
+            transition: 0.25s;
+            border: 1px solid transparent;
+        }
+
+        .hero-link.primary,
+        .tool-action.primary {
+            color: #001018;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            box-shadow: 0 14px 28px rgba(0, 242, 254, 0.18);
+        }
+
+        .hero-link.secondary,
+        .tool-action.secondary {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .hero-link:hover,
+        .tool-action:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.08);
+        }
+
+        .hero-panel {
+            position: relative;
+            padding: 18px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.025)),
+                rgba(8, 15, 30, 0.82);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+
+        .hero-panel::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(90deg, rgba(0, 242, 254, 0.12), transparent 38%),
+                linear-gradient(180deg, rgba(139, 92, 246, 0.11), transparent 46%);
+            pointer-events: none;
+        }
+
+        .panel-top {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .panel-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+        }
+
+        .panel-title i { color: var(--primary); }
+
+        .panel-pill {
+            color: #bbf7d0;
+            font-size: 0.8rem;
+            font-weight: 800;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(34, 197, 94, 0.12);
+            border: 1px solid rgba(34, 197, 94, 0.22);
+        }
+
+        .launcher-list {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .launcher-item {
+            display: grid;
+            grid-template-columns: 50px 1fr auto;
+            align-items: center;
+            gap: 14px;
+            min-height: 74px;
+            padding: 12px;
+            border-radius: 8px;
+            color: inherit;
+            text-decoration: none;
+            background: rgba(255, 255, 255, 0.045);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: 0.25s;
+        }
+
+        .launcher-item:hover {
+            transform: translateX(4px);
+            border-color: rgba(0, 242, 254, 0.34);
+            background: rgba(0, 242, 254, 0.075);
+        }
+
+        .tool-mark {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            font-size: 1.25rem;
+            color: #001018;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            box-shadow: 0 10px 26px rgba(0, 242, 254, 0.16);
+        }
+
+        .tool-mark.script {
+            background: linear-gradient(135deg, #f59e0b, #f97316);
+        }
+
+        .tool-mark.ai {
+            background: linear-gradient(135deg, #a78bfa, #fb7185);
+        }
+
+        .launcher-copy strong {
+            display: block;
+            font-size: 1rem;
+        }
+
+        .launcher-copy span {
+            display: block;
+            margin-top: 2px;
+            color: var(--text-sub);
+            font-size: 0.86rem;
+            line-height: 1.45;
+        }
+
+        .launcher-item .fa-arrow-right {
+            color: var(--primary);
+            transition: 0.25s;
+        }
+
+        .launcher-item:hover .fa-arrow-right {
+            transform: translateX(3px);
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .stat-box {
+            padding: 14px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.075);
+        }
+
+        .stat-num {
+            color: var(--primary);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 900;
+            line-height: 1.1;
+        }
+
+        .stat-title {
+            margin-top: 5px;
+            color: var(--text-sub);
+            font-size: 0.78rem;
+            line-height: 1.35;
+        }
+
+        .section {
+            padding: 66px 0;
+        }
+
+        .section.band {
+            background: rgba(8, 15, 30, 0.48);
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .section-head {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+            font-size: 0.9rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            margin: 0;
+            font-size: 2.25rem;
+            line-height: 1.25;
+        }
+
+        .section-head p,
+        .section-copy {
+            margin: 0;
+            max-width: 560px;
+            color: var(--text-sub);
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .tool-card {
+            display: flex;
+            flex-direction: column;
+            min-height: 420px;
+            padding: 20px;
+            border-radius: 8px;
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.025)),
+                var(--glass);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            box-shadow: var(--shadow-md);
+            transition: 0.25s;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(0, 242, 254, 0.32);
+        }
+
+        .tool-card-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .tool-label {
+            color: var(--text-sub);
+            font-size: 0.82rem;
+            font-weight: 800;
+        }
+
+        .tool-card h3 {
+            margin: 0 0 10px;
+            font-size: 1.42rem;
+            line-height: 1.25;
+        }
+
+        .tool-card p {
+            margin: 0;
+            color: var(--text-sub);
+            line-height: 1.7;
+        }
+
+        .tool-points {
+            display: flex;
+            flex-direction: column;
+            gap: 11px;
+            margin: 20px 0 24px;
+            padding: 0;
+            list-style: none;
+        }
+
+        .tool-points li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #dbeafe;
+            font-size: 0.95rem;
+        }
+
+        .tool-points i {
+            color: var(--success);
+            width: 18px;
+        }
+
+        .tool-card .tool-action {
+            margin-top: auto;
+            width: 100%;
+        }
+
+        .map-grid {
+            display: grid;
+            grid-template-columns: 0.8fr 1.2fr;
+            gap: 18px;
+            align-items: stretch;
+        }
+
+        .route-panel {
+            padding: 22px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            background: rgba(255, 255, 255, 0.045);
+            min-height: 100%;
+        }
+
+        .route-panel h3 {
+            margin: 0 0 12px;
+            font-size: 1.4rem;
+        }
+
+        .route-panel p {
+            margin: 0;
+            color: var(--text-sub);
+            line-height: 1.75;
+        }
+
+        .route-steps {
+            display: grid;
+            gap: 12px;
+        }
+
+        .route-step {
+            display: grid;
+            grid-template-columns: 44px 1fr;
+            gap: 14px;
+            align-items: start;
+            padding: 16px;
+            border-radius: 8px;
+            background: rgba(8, 15, 30, 0.58);
+            border: 1px solid rgba(255, 255, 255, 0.075);
+        }
+
+        .step-num {
+            width: 44px;
+            height: 44px;
+            display: grid;
+            place-items: center;
+            border-radius: 8px;
+            color: #001018;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        .route-step strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .route-step span {
+            display: block;
+            color: var(--text-sub);
+            line-height: 1.55;
+            font-size: 0.95rem;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .feature-item {
+            min-height: 178px;
+            padding: 18px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.045);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .feature-item i {
+            display: grid;
+            place-items: center;
+            width: 42px;
+            height: 42px;
+            margin-bottom: 16px;
+            border-radius: 8px;
+            color: #001018;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        .feature-item:nth-child(2) i {
+            background: linear-gradient(135deg, #22c55e, #86efac);
+        }
+
+        .feature-item:nth-child(3) i {
+            background: linear-gradient(135deg, #f59e0b, #fde047);
+        }
+
+        .feature-item:nth-child(4) i {
+            background: linear-gradient(135deg, #a78bfa, #fb7185);
+        }
+
+        .feature-item strong {
+            display: block;
+            margin-bottom: 7px;
+            font-size: 1.05rem;
+        }
+
+        .feature-item span {
+            display: block;
+            color: var(--text-sub);
+            line-height: 1.55;
+            font-size: 0.92rem;
+        }
+
+        .showcase {
+            display: grid;
+            grid-template-columns: 1.12fr 0.88fr;
+            gap: 18px;
+            align-items: center;
+        }
+
+        .showcase-terminal {
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(2, 6, 23, 0.86);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+
+        .terminal-top {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            height: 42px;
+            padding: 0 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.035);
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            background: var(--rose);
+        }
+
+        .dot:nth-child(2) { background: var(--warn); }
+        .dot:nth-child(3) { background: var(--success); }
+
+        .terminal-body {
+            padding: 18px;
+            font-family: 'Courier New', monospace;
+            color: #bae6fd;
+            font-size: 0.92rem;
+            line-height: 1.8;
+            overflow-x: auto;
+        }
+
+        .terminal-body .muted { color: #64748b; }
+        .terminal-body .good { color: #86efac; }
+        .terminal-body .accent { color: #fcd34d; }
+
+        .showcase-copy {
+            padding: 22px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.045);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .showcase-copy h2 {
+            font-size: 2rem;
+            margin-bottom: 12px;
+        }
+
+        .showcase-copy p {
+            margin: 0 0 20px;
+            color: var(--text-sub);
+            line-height: 1.75;
+        }
+
+        .mini-links {
+            display: grid;
+            gap: 10px;
+        }
+
+        .mini-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 8px;
+            color: inherit;
+            text-decoration: none;
+            background: rgba(8, 15, 30, 0.58);
+            border: 1px solid rgba(255, 255, 255, 0.075);
+            transition: 0.25s;
+        }
+
+        .mini-link:hover {
+            border-color: rgba(0, 242, 254, 0.3);
+            color: var(--primary);
+        }
+
+        .faq-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .faq-item {
+            padding: 18px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.045);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .faq-item strong {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .faq-item span {
+            display: block;
+            color: var(--text-sub);
+            line-height: 1.6;
+            font-size: 0.94rem;
+        }
+
+        .final-cta {
+            padding: 46px;
+            border-radius: 8px;
+            text-align: center;
+            background:
+                linear-gradient(135deg, rgba(0, 242, 254, 0.12), rgba(139, 92, 246, 0.12)),
+                rgba(8, 15, 30, 0.78);
+            border: 1px solid rgba(0, 242, 254, 0.16);
+            box-shadow: var(--shadow-md);
+        }
+
+        .final-cta h2 {
+            max-width: 720px;
+            margin: 0 auto 12px;
+        }
+
+        .final-cta p {
+            max-width: 680px;
+            margin: 0 auto 24px;
+            color: var(--text-sub);
+            line-height: 1.7;
+        }
+
+        .footer {
+            padding: 28px 0 36px;
+            color: var(--text-sub);
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .footer-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+        }
+
+        .footer-links {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .footer-links a {
+            color: var(--text-sub);
+            text-decoration: none;
+            transition: 0.25s;
+        }
+
+        .footer-links a:hover { color: var(--primary); }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.55s ease, transform 0.55s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 980px) {
+            .hero-grid,
+            .map-grid,
+            .showcase {
+                grid-template-columns: 1fr;
+            }
+
+            .tools-grid,
+            .feature-grid,
+            .faq-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            h1 { font-size: 3rem; }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                min-height: 72px;
+                padding: 12px 18px;
+            }
+
+            .shell {
+                width: calc(100vw - 40px);
+                max-width: calc(100vw - 40px);
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .nav-toggle { display: block; }
+
+            .nav-center {
+                position: fixed;
+                top: 72px;
+                left: 16px;
+                right: 16px;
+                display: none;
+                flex-direction: column;
+                align-items: stretch;
+                padding: 14px;
+                border-radius: 8px;
+                background: rgba(3, 7, 18, 0.97);
+                box-shadow: var(--shadow-lg);
+            }
+
+            .nav-center.open { display: flex; }
+
+            .nav-center a {
+                justify-content: center;
+                border-radius: 8px;
+            }
+
+            .hero { padding-top: 108px; }
+
+            .hero-grid { gap: 26px; }
+
+            h1 {
+                font-size: 2.05rem;
+                line-height: 1.22;
+            }
+
+            .headline-line {
+                display: block;
+            }
+
+            .hero-copy { font-size: 1.04rem; }
+
+            .hero-actions { flex-direction: column; }
+
+            .hero-link,
+            .tool-action {
+                width: 100%;
+            }
+
+            .launcher-item {
+                grid-template-columns: 46px 1fr;
+            }
+
+            .launcher-item .fa-arrow-right { display: none; }
+
+            .stats-row,
+            .tools-grid,
+            .feature-grid,
+            .faq-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section { padding: 48px 0; }
+
+            .section-head {
+                display: block;
+            }
+
+            .section-head p { margin-top: 12px; }
+
+            .tool-card { min-height: 0; }
+
+            .final-cta { padding: 28px 18px; }
+
+            .footer-inner {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .shell {
+                width: min(330px, calc(100vw - 40px));
+                max-width: min(330px, calc(100vw - 40px));
+            }
+
+            h1 {
+                font-size: 1.95rem;
+            }
+
+            .hero-copy {
+                font-size: 0.98rem;
+            }
+
+            .launcher-item {
+                grid-template-columns: 42px 1fr;
+                padding: 10px;
+            }
+
+            .tool-mark {
+                width: 42px;
+                height: 42px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="ordyGrid"></canvas>
+    <div class="cursor-ring" id="cursorRing"></div>
+    <div class="cursor-orb" id="cursorOrb"></div>
+
+    <nav class="navbar" aria-label="Main Navigation">
+        <a href="/" class="logo-wrap">
+            <div class="logo">Ordy<span>Copy</span></div>
+            <div class="logo-sub">Tools Hub</div>
+        </a>
+
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <div class="nav-center" id="navLinks">
+            <a href="/game-copier"><i class="fa-regular fa-copy"></i> Game Copier</a>
+            <a href="/script-generator"><i class="fa-solid fa-code"></i> Script Generator</a>
+            <a href="/ai"><i class="fa-solid fa-robot"></i> Ordy AI</a>
+            <a href="https://discord.gg/8qEVJfSM3G" class="discord-icon-btn" target="_blank" rel="noopener noreferrer" aria-label="Discord"><i class="fab fa-discord"></i></a>
+        </div>
+    </nav>
+
+    <div class="page">
+        <header class="hero">
+            <div class="shell hero-grid">
+                <div class="hero-copy-block reveal">
+                    <div class="hero-badge"><i class="fa-solid fa-wand-magic-sparkles"></i> One place for every OrdyCopy tool</div>
+                    <h1>
+                        <span class="headline-line">Pick a Roblox tool.</span>
+                        <span class="headline-line">Launch it in</span>
+                        <span class="headline-line gradient-text">one clean step.</span>
+                    </h1>
+                    <p class="hero-copy">OrdyCopy brings your Roblox tools into one smooth place: copy games, generate scripts, or ask Ordy AI whenever you need fast help.</p>
+
+                    <div class="hero-actions">
+                        <a class="hero-link primary" href="#tools"><i class="fa-solid fa-table-cells-large"></i> Explore Tools</a>
+                        <a class="hero-link secondary" href="/game-copier"><i class="fa-regular fa-copy"></i> Open Game Copier</a>
+                    </div>
+                </div>
+
+                <div class="hero-panel reveal">
+                    <div class="panel-top">
+                        <div class="panel-title"><i class="fa-solid fa-table-cells-large"></i> Tool Launcher</div>
+                        <div class="panel-pill">Online</div>
+                    </div>
+
+                    <div class="launcher-list">
+                        <a class="launcher-item" href="/game-copier">
+                            <span class="tool-mark"><i class="fa-regular fa-copy"></i></span>
+                            <span class="launcher-copy">
+                                <strong>Game Copier</strong>
+                                <span>Paste the Roblox game link, verify the key, and continue to the download.</span>
+                            </span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+
+                        <a class="launcher-item" href="/script-generator">
+                            <span class="tool-mark script"><i class="fa-solid fa-code"></i></span>
+                            <span class="launcher-copy">
+                                <strong>Script Generator</strong>
+                                <span>Generate a ready script file for supported games after verification.</span>
+                            </span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+
+                        <a class="launcher-item" href="/ai">
+                            <span class="tool-mark ai"><i class="fa-solid fa-robot"></i></span>
+                            <span class="launcher-copy">
+                                <strong>Ordy AI</strong>
+                                <span>Ask questions, attach images, and keep chats saved in your browser.</span>
+                            </span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+
+                    <div class="stats-row">
+                        <div class="stat-box">
+                            <div class="stat-num" id="stat1">0</div>
+                            <div class="stat-title">Power Tools</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-num" id="stat2">0</div>
+                            <div class="stat-title">Clean Home</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-num" id="stat3">0</div>
+                            <div class="stat-title">Quick Launch</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <section class="section" id="tools">
+                <div class="shell">
+                    <div class="section-head reveal">
+                        <div>
+                            <div class="eyebrow"><i class="fa-solid fa-screwdriver-wrench"></i> The toolkit</div>
+                            <h2>Three focused tools, one simple start.</h2>
+                        </div>
+                        <p>Choose the tool you need, jump in fast, and keep the experience clean from the first click.</p>
+                    </div>
+
+                    <div class="tools-grid">
+                        <article class="tool-card reveal">
+                            <div class="tool-card-top">
+                                <span class="tool-mark"><i class="fa-regular fa-copy"></i></span>
+                                <span class="tool-label">Copy Tool</span>
+                            </div>
+                            <h3>Game Copier</h3>
+                            <p>Start with a Roblox game link, verify your key, and continue through a focused copying flow.</p>
+                            <ul class="tool-points">
+                                <li><i class="fa-solid fa-check"></i> Game URL field</li>
+                                <li><i class="fa-solid fa-check"></i> License key verification</li>
+                                <li><i class="fa-solid fa-check"></i> Download redirect flow</li>
+                            </ul>
+                            <a class="tool-action primary" href="/game-copier"><i class="fa-regular fa-copy"></i> Launch Game Copier</a>
+                        </article>
+
+                        <article class="tool-card reveal">
+                            <div class="tool-card-top">
+                                <span class="tool-mark script"><i class="fa-solid fa-code"></i></span>
+                                <span class="tool-label">Script Tool</span>
+                            </div>
+                            <h3>Script Generator</h3>
+                            <p>Generate a clean text script for supported games with a simple link and key workflow.</p>
+                            <ul class="tool-points">
+                                <li><i class="fa-solid fa-check"></i> Game ID detection</li>
+                                <li><i class="fa-solid fa-check"></i> License key check</li>
+                                <li><i class="fa-solid fa-check"></i> Script text download</li>
+                            </ul>
+                            <a class="tool-action secondary" href="/script-generator"><i class="fa-solid fa-code"></i> Launch Generator</a>
+                        </article>
+
+                        <article class="tool-card reveal">
+                            <div class="tool-card-top">
+                                <span class="tool-mark ai"><i class="fa-solid fa-robot"></i></span>
+                                <span class="tool-label">AI Tool</span>
+                            </div>
+                            <h3>Ordy AI</h3>
+                            <p>Go straight to the AI workspace with saved chats, image upload, and Roblox-focused answers.</p>
+                            <ul class="tool-points">
+                                <li><i class="fa-solid fa-check"></i> Browser chat sessions</li>
+                                <li><i class="fa-solid fa-check"></i> Image attachments</li>
+                                <li><i class="fa-solid fa-check"></i> Code block copy buttons</li>
+                            </ul>
+                            <a class="tool-action secondary" href="/ai"><i class="fa-solid fa-robot"></i> Launch Ordy AI</a>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section band">
+                <div class="shell map-grid">
+                    <div class="route-panel reveal">
+                        <div class="eyebrow"><i class="fa-solid fa-bolt"></i> Smooth flow</div>
+                        <h3>Everything starts clean and stays easy.</h3>
+                        <p>The page keeps the first choice obvious, then each tool takes over with its own focused workspace.</p>
+                    </div>
+
+                    <div class="route-steps">
+                        <div class="route-step reveal">
+                            <div class="step-num">01</div>
+                            <div>
+                                <strong>Choose your tool</strong>
+                                <span>Pick from Game Copier, Script Generator, or Ordy AI using clear visual cards.</span>
+                            </div>
+                        </div>
+                        <div class="route-step reveal">
+                            <div class="step-num">02</div>
+                            <div>
+                                <strong>Paste or ask</strong>
+                                <span>Use links, keys, chat, and images depending on the tool you open.</span>
+                            </div>
+                        </div>
+                        <div class="route-step reveal">
+                            <div class="step-num">03</div>
+                            <div>
+                                <strong>Get the result</strong>
+                                <span>Download, generate, or chat without fighting the interface.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <div class="shell">
+                    <div class="section-head reveal">
+                        <div>
+                            <div class="eyebrow"><i class="fa-solid fa-layer-group"></i> Clean structure</div>
+                            <h2>Built to feel like a real control center.</h2>
+                        </div>
+                        <p>Built for visitors who want the right tool quickly, with a calm visual style and clear actions.</p>
+                    </div>
+
+                    <div class="feature-grid">
+                        <div class="feature-item reveal">
+                            <i class="fa-solid fa-compass"></i>
+                            <strong>Clear navigation</strong>
+                            <span>Every tool is visible from the top bar, the hero launcher, and the main tools section.</span>
+                        </div>
+                        <div class="feature-item reveal">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <strong>Focused spaces</strong>
+                            <span>Each tool has a dedicated workspace, so the experience stays clean and direct.</span>
+                        </div>
+                        <div class="feature-item reveal">
+                            <i class="fa-solid fa-bolt"></i>
+                            <strong>Fast picking</strong>
+                            <span>The main actions stay one click away without crowded controls.</span>
+                        </div>
+                        <div class="feature-item reveal">
+                            <i class="fa-solid fa-mobile-screen-button"></i>
+                            <strong>Mobile friendly</strong>
+                            <span>The layout stacks cleanly on phones and keeps launch buttons easy to tap.</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section band">
+                <div class="shell showcase">
+                    <div class="showcase-terminal reveal" aria-label="OrdyCopy tools preview">
+                        <div class="terminal-top">
+                            <span class="dot"></span>
+                            <span class="dot"></span>
+                            <span class="dot"></span>
+                        </div>
+                        <div class="terminal-body">
+                            <div><span class="muted">tool</span> Game Copier <span class="good">ready</span></div>
+                            <div><span class="muted">tool</span> Script Generator <span class="good">ready</span></div>
+                            <div><span class="muted">tool</span> Ordy AI <span class="good">ready</span></div>
+                            <div><span class="muted">mode</span> smooth launcher <span class="accent">active</span></div>
+                            <br>
+                            <div><span class="muted">status</span> tool selection ready</div>
+                            <div><span class="muted">style</span> network background active</div>
+                        </div>
+                    </div>
+
+                    <div class="showcase-copy reveal">
+                        <div class="eyebrow"><i class="fa-solid fa-link"></i> Direct access</div>
+                        <h2>No confusion. Just pick and go.</h2>
+                        <p>Every card and button points to a real workspace, so visitors can start without reading a manual.</p>
+                        <div class="mini-links">
+                            <a class="mini-link" href="/game-copier"><span><i class="fa-regular fa-copy"></i> Open Game Copier</span><i class="fa-solid fa-arrow-right"></i></a>
+                            <a class="mini-link" href="/script-generator"><span><i class="fa-solid fa-code"></i> Open Script Generator</span><i class="fa-solid fa-arrow-right"></i></a>
+                            <a class="mini-link" href="/ai"><span><i class="fa-solid fa-robot"></i> Open Ordy AI</span><i class="fa-solid fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <div class="shell">
+                    <div class="section-head reveal">
+                        <div>
+                            <div class="eyebrow"><i class="fa-regular fa-circle-question"></i> Quick answers</div>
+                            <h2>Simple choices for visitors.</h2>
+                        </div>
+                    </div>
+
+                    <div class="faq-grid">
+                        <div class="faq-item reveal">
+                            <strong>Need to copy a game?</strong>
+                            <span>Open Game Copier, paste your link, and verify your key.</span>
+                        </div>
+                        <div class="faq-item reveal">
+                            <strong>Need a script file?</strong>
+                            <span>Open Script Generator, verify, and download the generated text file.</span>
+                        </div>
+                        <div class="faq-item reveal">
+                            <strong>Need help or code answers?</strong>
+                            <span>Open Ordy AI and keep your chat workspace separate from the other tools.</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <div class="shell">
+                    <div class="final-cta reveal">
+                        <h2>Start with the tool that matches your next move.</h2>
+                        <p>Use the hub as your clean entry point, then jump into the dedicated OrdyCopy page you need.</p>
+                        <div class="hero-actions" style="justify-content: center;">
+                            <a class="hero-link primary" href="/game-copier"><i class="fa-regular fa-copy"></i> Game Copier</a>
+                            <a class="hero-link secondary" href="/script-generator"><i class="fa-solid fa-code"></i> Script Generator</a>
+                            <a class="hero-link secondary" href="/ai"><i class="fa-solid fa-robot"></i> Ordy AI</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <div class="shell footer-inner">
+                <div>OrdyCopy Tools Hub</div>
+                <div class="footer-links">
+                    <a href="/game-copier">Game Copier</a>
+                    <a href="/script-generator">Script Generator</a>
+                    <a href="/ai">Ordy AI</a>
+                    <a href="https://discord.gg/8qEVJfSM3G" target="_blank" rel="noopener noreferrer">Discord</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const navToggle = document.getElementById('navToggle');
+            const navLinks = document.getElementById('navLinks');
+
+            if (navToggle && navLinks) {
+                navToggle.addEventListener('click', function() {
+                    const isOpen = navLinks.classList.toggle('open');
+                    navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+                    document.body.classList.toggle('menu-open', isOpen);
+                });
+
+                navLinks.querySelectorAll('a').forEach((link) => {
+                    link.addEventListener('click', () => {
+                        navLinks.classList.remove('open');
+                        navToggle.setAttribute('aria-expanded', 'false');
+                        document.body.classList.remove('menu-open');
+                    });
+                });
+            }
+
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) entry.target.classList.add('visible');
+                });
+            }, { threshold: 0.14 });
+
+            document.querySelectorAll('.reveal').forEach((el) => revealObserver.observe(el));
+        });
+
+        function animateValue(id, start, end, duration, suffix = "") {
+            const obj = document.getElementById(id);
+            let startTime = null;
+
+            function step(timestamp) {
+                if (!startTime) startTime = timestamp;
+                const progress = Math.min((timestamp - startTime) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start) + suffix;
+                if (progress < 1) window.requestAnimationFrame(step);
+            }
+
+            window.requestAnimationFrame(step);
+        }
+
+        animateValue("stat1", 0, 3, 900);
+        animateValue("stat2", 0, 1, 900);
+        animateValue("stat3", 0, 3, 900);
+
+        const cursorRing = document.getElementById('cursorRing');
+        const cursorOrb = document.getElementById('cursorOrb');
+        let cursorX = window.innerWidth / 2;
+        let cursorY = window.innerHeight / 2;
+        let ringX = cursorX;
+        let ringY = cursorY;
+
+        if (cursorRing && cursorOrb && window.matchMedia('(pointer: fine)').matches) {
+            window.addEventListener('mousemove', (event) => {
+                cursorX = event.clientX;
+                cursorY = event.clientY;
+                cursorOrb.style.transform = `translate(${cursorX}px, ${cursorY}px) translate(-50%, -50%)`;
+            });
+
+            document.querySelectorAll('a, button, input, textarea').forEach((item) => {
+                item.addEventListener('mouseenter', () => cursorRing.classList.add('hovering'));
+                item.addEventListener('mouseleave', () => cursorRing.classList.remove('hovering'));
+            });
+
+            function animateCursor() {
+                ringX += (cursorX - ringX) * 0.18;
+                ringY += (cursorY - ringY) * 0.18;
+                cursorRing.style.transform = `translate(${ringX}px, ${ringY}px) translate(-50%, -50%)`;
+                requestAnimationFrame(animateCursor);
+            }
+
+            animateCursor();
+        }
+
+        const canvas = document.getElementById('ordyGrid');
+        const ctx = canvas.getContext('2d');
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+
+        let particles = [];
+        let mouse = { x: -1000, y: -1000, radius: 200 };
+
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+        });
+
+        class Node {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.7;
+                this.vy = (Math.random() - 0.5) * 0.7;
+                this.size = Math.random() * 2 + 1;
+            }
+
+            update() {
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+
+                const dx = mouse.x - this.x;
+                const dy = mouse.y - this.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (dist < mouse.radius && dist > 0) {
+                    const force = (mouse.radius - dist) / mouse.radius;
+                    this.x -= (dx / dist) * force * 2;
+                    this.y -= (dy / dist) * force * 2;
+                } else {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                }
+
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = '#00f2fe';
+                ctx.fill();
+            }
+        }
+
+        function seedParticles() {
+            particles = [];
+            const count = window.innerWidth < 768 ? 42 : 64;
+            for (let i = 0; i < count; i++) particles.push(new Node());
+        }
+
+        seedParticles();
+        window.addEventListener('resize', seedParticles);
+
+        function drawLines() {
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < 180) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(0, 242, 254, ${0.2 - dist / 900})`;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawLines();
+            for (const p of particles) p.update();
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>
