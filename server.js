@@ -30,6 +30,51 @@ const fileMap = {
     "000": "1A1UHkQct18ZeK9qXWm7uynNIPPP5xUzM"
 };
 
+function getRobloxGameIdFromUrl(value) {
+    if (!value || typeof value !== "string") return null;
+
+    const input = value.trim();
+    if (!input || /\s/.test(input)) return null;
+
+    const candidate = /^https?:\/\//i.test(input) ? input : `https://${input}`;
+
+    try {
+        const parsed = new URL(candidate);
+        const host = parsed.hostname.toLowerCase();
+
+        if (host !== "roblox.com" && !host.endsWith(".roblox.com")) {
+            return null;
+        }
+
+        const parts = parsed.pathname.split("/").filter(Boolean);
+        const gamesIndex = parts.findIndex((part) => part.toLowerCase() === "games");
+
+        if (gamesIndex === -1 || !parts[gamesIndex + 1]) {
+            return null;
+        }
+
+        const gameId = parts[gamesIndex + 1].match(/^\d+$/);
+        return gameId ? gameId[0] : null;
+    } catch (err) {
+        return null;
+    }
+}
+
+function getRobloxGameIdsFromText(value) {
+    if (!value || typeof value !== "string") return [];
+
+    const ids = new Set();
+    const urlPattern = /(?:https?:\/\/)?(?:[\w-]+\.)*roblox\.com\/[^\s"'<>]+/gi;
+    const matches = value.match(urlPattern) || [];
+
+    matches.forEach((match) => {
+        const gameId = getRobloxGameIdFromUrl(match);
+        if (gameId) ids.add(gameId);
+    });
+
+    return Array.from(ids);
+}
+
 /* =========================
    🔐 /verify
 ========================= */
@@ -52,19 +97,21 @@ app.post(["/", "/verify"], async (req, res) => {
     }
 
     const cleanedInput = powershell.replace(/\s+/g, " ").trim();
-    const projectName = typeof req.body.projectName === "string" ? req.body.projectName.trim() : "";
+    const gameUrl = typeof req.body.gameUrl === "string" ? req.body.gameUrl.trim() : "";
+    const gameId = getRobloxGameIdFromUrl(gameUrl);
 
-    const match =
-        projectName.match(/^(\d+)$/) ||
-        projectName.match(/roblox\.com\/(?:[a-z]{2}(?:-[a-z]{2})?\/)?games\/(\d+)/i) ||
-        cleanedInput.match(/roblox\.com\/(?:[a-z]{2}(?:-[a-z]{2})?\/)?games\/(\d+)/i);
-
-    if (!match) {
-        console.log("No match found");
-        return res.json({ success: false });
+    if (!gameId) {
+        console.log("Invalid Roblox game URL");
+        return res.json({ success: false, error: "INVALID_GAME_URL" });
     }
 
-    const gameId = match[1];
+    const keyGameIds = getRobloxGameIdsFromText(cleanedInput);
+
+    if (!keyGameIds.includes(gameId)) {
+        console.log("Game URL mismatch");
+        return res.json({ success: false, error: "URL_MISMATCH" });
+    }
+
     console.log("Game ID:", gameId);
 
     let fileId = fileMap[gameId];
