@@ -34,7 +34,7 @@ const fileMap = {
    🔐 /verify
 ========================= */
 
-app.post("/verify", async (req, res) => {
+app.post(["/", "/verify"], async (req, res) => {
 
     console.log("Incoming body:", req.body);
 
@@ -52,8 +52,12 @@ app.post("/verify", async (req, res) => {
     }
 
     const cleanedInput = powershell.replace(/\s+/g, " ").trim();
+    const projectName = typeof req.body.projectName === "string" ? req.body.projectName.trim() : "";
 
-    const match = cleanedInput.match(/roblox\.com\/(?:[a-z]{2}(?:-[a-z]{2})?\/)?games\/(\d+)/i);
+    const match =
+        projectName.match(/^(\d+)$/) ||
+        projectName.match(/roblox\.com\/(?:[a-z]{2}(?:-[a-z]{2})?\/)?games\/(\d+)/i) ||
+        cleanedInput.match(/roblox\.com\/(?:[a-z]{2}(?:-[a-z]{2})?\/)?games\/(\d+)/i);
 
     if (!match) {
         console.log("No match found");
